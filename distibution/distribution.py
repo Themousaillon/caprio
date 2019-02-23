@@ -55,6 +55,7 @@ def projHyperBase(x, hyperBase, scale):
 
 # descente du gradient projeté
 def gradientProj(objList, scale, fObj, pas,  epsilon, maxIter):
+    print('starting to optimize')
     hyperBase = make_opti_base(len(objList))
     Xk = projHyperBase(np.array([random.randint(10,100) for _ in range(len(objList))]), hyperBase, scale)
     Xn = Xk + 2*epsilon
@@ -64,7 +65,8 @@ def gradientProj(objList, scale, fObj, pas,  epsilon, maxIter):
         grad = approx_fprime(Xk, fObj, 0.0001, objList)
         Xn = projHyperBase(Xk-pas*grad, hyperBase, scale)
         i+=1
-    return finalDistrib(balanceVector(Xn).round(), objList, scale)
+        print(i)
+    return finalDistrib(np.floor(balanceVector(Xn)), objList, scale)
 
 # Ramène tout des attributs du vecteur dans le plan positif
 def balanceVector(vec):
@@ -78,22 +80,24 @@ def balanceVector(vec):
 
 # Distribut les dernières parts qui ne peuvent pas être décidées par le critère des moindes carrés
 def finalDistrib(x, obj, scale):
-    while np.sum(x)-scale != 0:
+    while scale-np.sum(x) != 0:
+        print("to distrib --> ", scale-np.sum(x))
         satVec = x/obj
         mini = satVec.argmin()
         x[mini] += 1
+        print(x)
     return x
 
 
 
 ####### EXEMPLE D'UTILISARION ######
 
-# objList = np.array([9,2,4, 20, 10, 3, 7, 6, 18])
+objList = np.random.randint(1,100,1000)
+scale = sum(objList)-20
+solMC = gradientProj(objList, scale, moindreCarre, 1e-3, 1e-6, 1000)
+#solSAT = gradientProj(objList, 37, satisfaction, 1e-3, 1e-6, 10000)
 
-# solMC = gradientProj(objList, 37, moindreCarre, 1e-4, 1e-6, 100000)
-# #solSAT = gradientProj(objList, 37, satisfaction, 1e-3, 1e-6, 10000)
-
-# print("distrib moindres carrés --> ", solMC, sum(solMC))
-# print("error --> ", moindreCarre(solMC, objList))
-# #print("distrib satisfaction --> ",solSAT, sum(solSAT))
+print("distrib moindres carrés --> ", solMC, sum(solMC))
+print("error --> ", moindreCarre(solMC, objList))
+#print("distrib satisfaction --> ",solSAT, sum(solSAT))
 
