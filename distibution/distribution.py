@@ -38,7 +38,7 @@ def make_opti_base(nbDim):
     return orthonormalize(hyperBase)
 
 # fonction objectif de minimisation celon la norme 2
-def moindreCarre(x,y):
+def moindreCarre(x,y ):
     return np.sum(np.power(x-y, 2))
 
 # fonctiono objectif de minimisation celon le critère de satisfaction (ne marche pas car non convexe)
@@ -55,17 +55,16 @@ def projHyperBase(x, hyperBase, scale):
 
 # descente du gradient projeté
 def gradientProj(objList, scale, fObj, pas,  epsilon, maxIter):
-    print('starting to optimize')
     hyperBase = make_opti_base(len(objList))
     Xk = projHyperBase(np.array([random.randint(10,100) for _ in range(len(objList))]), hyperBase, scale)
     Xn = Xk + 2*epsilon
     i=0
+    print('starting to optimize')
     while (np.linalg.norm(Xk - Xn) > epsilon) and (i < maxIter):
         Xk = Xn
         grad = approx_fprime(Xk, fObj, 0.0001, objList)
         Xn = projHyperBase(Xk-pas*grad, hyperBase, scale)
         i+=1
-        print(i)
     return finalDistrib(np.floor(balanceVector(Xn)), objList, scale)
 
 # Ramène tout des attributs du vecteur dans le plan positif
@@ -81,7 +80,6 @@ def balanceVector(vec):
 # Distribut les dernières parts qui ne peuvent pas être décidées par le critère des moindes carrés
 def finalDistrib(x, obj, scale):
     while scale-np.sum(x) != 0:
-        print("to distrib --> ", scale-np.sum(x))
         satVec = x/obj
         mini = satVec.argmin()
         x[mini] += 1
@@ -92,12 +90,12 @@ def finalDistrib(x, obj, scale):
 
 ####### EXEMPLE D'UTILISARION ######
 
-objList = np.random.randint(1,100,1000)
-scale = sum(objList)-20
-solMC = gradientProj(objList, scale, moindreCarre, 1e-3, 1e-6, 1000)
-#solSAT = gradientProj(objList, 37, satisfaction, 1e-3, 1e-6, 10000)
+objList = np.random.randint(1,100,200)
+vlist = np.random.randint(1,600,30)
+scale = sum(vlist)
+solMC = gradientProj(objList, scale, moindreCarre, 1e-2, 1e-6, 1000)
+#solSAT = gradientProj(objList, scale, satisfaction, 1e-2, 1e-6, 1000)
 
 print("distrib moindres carrés --> ", solMC, sum(solMC))
 print("error --> ", moindreCarre(solMC, objList))
 #print("distrib satisfaction --> ",solSAT, sum(solSAT))
-

@@ -7,5 +7,5 @@ class mongoApi():
         self.position = self.db.position
 
     def insertPosition(self, position):
-        self.position.insertOne(position)
+        self.position.insert_one(position)
 
