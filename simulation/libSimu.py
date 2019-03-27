@@ -15,7 +15,7 @@ def clientBehaviour(client, procQueue, listActions, jour):
 
         if phase == "trading":
             if random.random() > 0.7:
-                client.genLogPositionAleatoire(listActions, jour)
+                client["client"].genLogPositionAleatoire(listActions, jour)
             time.sleep(0.2)
 
 #        if phase == "repartition":
@@ -61,15 +61,15 @@ def terminateSimulation(processList):
 
 def startSimulation(processList, nbJours):
     for p in processList:
-        p.start()
+        p["process"].start()
 
     for j in range(nbJours):
         # open the trading for 5 seconds
-        print("Le trading du jour ", j , " est ouvert !!")
+        print("Le trading du jour ", j , " est ouvert !! \n")
         openTrade(processList, j)
         time.sleep(5)
-        print("Il est 17H, la salle de marché fermée")
-        print("Distribution des taches au clients et calcul de la répartition")
+        print("Il est 17H, la salle de marché fermée \n")
+        print("Distribution des taches au clients et calcul de la répartition \n")
         # mettre ici l'appel du code de la distribution, s'inspirer de la fonciton openTrade
         # à default de l'avoir je me contente de fermer la salle de marché
         closeTrade(processList)
@@ -82,10 +82,12 @@ def startSimulation(processList, nbJours):
 
 
 def simulate(clientList, nbJour, listActions):
-    print("Début de la simulation")
+    print("######################################################")
+    print("Début de la simulation \n\n")
     processList = spawnClientProcess(clientList, listActions)
     startSimulation(processList, nbJour)
     print("fin de la simulation")
+    print("######################################################\n\n")
     return 0
 
     
